@@ -1,0 +1,88 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Title</title>-->
+<!--    <script>-->
+<!--        window.onload = function() {-->
+<!--            canvas = document.getElementById("mycanvas");-->
+<!--            //canvas.width = document.body.clientWidth;-->
+<!--            canvas.width = 10000;-->
+<!--            canvas.height = 10000; // 그냥 엄청 크게 해놓으면 될거같음???-->
+
+<!--            // ctx.beginPath(); -> ctx.moveTo(); -> ctx.lineTo(); -> ctx.stroke(); 하면 시작-> 시작점이동-> 선을 따라 이동 -> 컨텍스트에 기록된 패스를 실제로 그림-->
+<!--            // ctx.drawImage(img, x,y, width, height); 로 하면 이미지 내용을 컨텍스트에 실제로 그려주는듯, width와 height으로 비율 조절 가능-->
+<!--            ctx = canvas.getContext('2d');-->
+<!--            canvasW = canvas.width;-->
+<!--            canvasH = canvas.height;-->
+
+<!--            // 이거 펜을 계속 대고 있는 동안은 서버에 업데이트된거 있는지 주기적으로 보내는 요청 안보내야겠다 - 근데 콜스택이 한개라 자동으로 안보내질거같기도?-->
+<!--            // 이거 서버쪽에서 2개 이미지 합치는 작업해서 보내주는건 어떨까?-->
+<!--            // 서버가 최근 2개 ImageData 가지고 합쳐서 클라이언트한테 보내주는 것.-->
+
+<!--            // 서버로부터 받아온 합쳐진 ImageData를 ctx.putImageData(imageData, x,y); 로 사용-->
+<!--            // 클라이언트 화면이 달라서 비율이 다른 경우는 어떻게 하지.. -> 아 이거 스크롤바 자동으로 생기는구나 상관없겠다-->
+
+<!--        }-->
+<!--    </script>-->
+<!--</head>-->
+<!--<body>-->
+<!--    <p1>페인터</p1>-->
+<!--    <div id="toolbar"></div>-->
+<!--    <canvas id="mycanvas"></canvas>-->
+
+<!--</body>-->
+<!--</html>-->
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Flask_Chat_App</title>
+</head>
+<body>
+
+<h3 style='color: #ccc;font-size: 30px;'>No message yet..</h3>
+<div class="message_holder"></div>
+
+<form action="" method="POST">
+  <input type="text" class="username" placeholder="User Name"/>
+  <input type="text" class="message" placeholder="Messages"/>
+  <input type="submit"/>
+</form>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
+<script type="text/javascript" charset="UTF-8">
+  var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+  socket.on( 'connect', function() {
+    socket.emit( 'my event', {
+      data: 'User Connected'
+    } )
+    var form = $( 'form' ).on( 'submit', function( e ) {
+      e.preventDefault()
+      let user_name = $( 'input.username' ).val()
+      let user_input = $( 'input.message' ).val()
+      socket.emit( 'my event', {
+        user_name : user_name,
+        message : user_input
+      } )
+      $( 'input.message' ).val( '' ).focus()
+    } )
+  } )
+  socket.on( 'my response', function( msg ) {
+    console.log( msg )
+    if( typeof msg.user_name !== 'undefined' ) {
+      $( 'h3' ).remove()
+      $( 'div.message_holder' ).append( '<div><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</div>' )
+    }
+  })
+</script>
+
+</body>
+</html>
+
